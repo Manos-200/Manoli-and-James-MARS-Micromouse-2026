@@ -10,81 +10,74 @@ from encoders import Encoders
 
 mm = Micromouse()
 
-GREEN_RANGE = (2400,30000)
+GREEN_RANGE = (8000,10000)
 RED_RANGE = (1320,20000)
 
 
+
 if __name__ == "__main__":
-    
-    mm.drive_straight(30, 200)
-        
+         
     
     
-#     mm.motor_1.spin_power(100)
-#     mm.motor_2.spin_power(-100)
-#     while True:
-#         print(mm.get_encoders())
-#         if mm.get_button():
-#             mm.drive_stop()
-#             break
-#         time.sleep(0.01)
-    
-#     for i in range(4):
-#         mm.drive_straight(10, 255)
-#         time.sleep(0.1)
-#         mm.drive_turn(90, 255)
-#         time.sleep(0.1)
 
-# {mm.check_colour(GREEN_RANGE, RED_RANGE)[0]} \t Red LDR: {mm.check_colour(GREEN_RANGE, RED_RANGE)[1]}{mm.get_ldr_values()[0]} \t Red LDR: {mm.get_ldr_values()[1]}
-
-#     mm.drive_straight(50,90)
 
 
 
 ### VERY IMPORTANT MAZE SOLVING STUFF
-#     while not mm.get_button(): # Start button
-#         pass
-#         time.sleep(0.2)
-#     time.sleep(1)
-#     
-#     buffer = 0
-#     for _ in range(10):
-#         if mm.get_ir_values(2):
-#             buffer += 1
-#         if buffer > 5:
-#             mm.wall_found()
-#         
-#     goal = [4,4]
-#     while True:
-#         distances = mm.floodfill(mm.maze, goal)
-# 
-#         while mm.pos != goal:
-#             distances = mm.floodfill(mm.maze, goal)
-#             route = mm.pickroute(distances)
-#             print(mm.maze)
-#             if route == (-mm.dir[1],mm.dir[0]):
-#                 mm.drive_turn(1)
-#             elif route == (mm.dir[1],-mm.dir[0]):
-#                 mm.drive_turn(-1)
-#             elif route == (-mm.dir[0],-mm.dir[1]):
-#                 mm.drive_turn(1,True)
-#                 mm.drive_turn(1)
-#             if route == (mm.dir[0], mm.dir[1]):
-#                 mm.led_debug_set(False)
-#                 mm.drive_straight(18)
+    while not mm.get_button(): # Start button
+        pass
+        time.sleep(0.1)
+    time.sleep(1)
+        
+    goal = [4,4]
+    while True:
+        distances = mm.floodfill(mm.maze, goal)
+        
+        while mm.pos != goal:
+            distances = mm.floodfill(mm.maze, goal)
+            route = mm.pickroute(distances)
+            if route == (-mm.dir[1],mm.dir[0]):
+                time.sleep(0.5)
+                mm.drive_turn(1)
+                time.sleep(0.5)
+            elif route == (mm.dir[1],-mm.dir[0]):
+                time.sleep(0.5)
+                mm.drive_turn(-1)
+                time.sleep(0.5)
+            elif route == (-mm.dir[0],-mm.dir[1]):
+                time.sleep(0.5)
+                mm.drive_turn(1,True)
+                time.sleep(0.5)
+                mm.drive_turn(1)
+                time.sleep(0.5)
+            if route == (mm.dir[0], mm.dir[1]):
+                mm.led_debug_set(False)
+                buffer = 0
+                for _ in range(10):
+                    if mm.get_ir_values(2):
+                        buffer += 1
+                    if buffer > 5:
+                        mm.wall_found()
+                        break
+                    time.sleep(0.01)
+                mm.drive_straight()
 #                 colour = mm.check_colour(GREEN_RANGE, RED_RANGE)
 #                 mm.record_colour(colour)
-#                 mm.led_debug_set(True)
-#             if mm.get_button():
-#                 mm.drive_stop()
-#                 break
-# #                 else:
-# #                 mm.floodfill(mm.maze,goal)
-# 
-#         if mm.pos == [4,4]: goal = [0,0]
-#         if mm.get_button():
-#             mm.drive_stop()
-#             break
+#                 mm.display_colour(colour)
+                mm.led_debug_set(True)
+            if mm.get_button():
+                mm.drive_stop()
+                break
+
+        if mm.pos == [4,4]: goal = [0,0]
+        if mm.get_button():
+            mm.drive_stop()
+            break
+        
+    mm.save_persistent_text('maze.txt', str(mm.maze))
+    mm.save_persistent_text('neighbours.txt', str(mm.get_neighbours(mm.pos, mm.maze)))
+    mm.save_persistent_text('encoders.txt', str(mm.encoders))
+    mm.save_persistent_text('route.txt', str(mm.route))
 ## END OF VERY IMPORTANT STUFF
 
 
