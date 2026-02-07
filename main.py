@@ -30,6 +30,7 @@ if __name__ == "__main__":
     time.sleep(1)
         
     goal = [4,4]
+    
     while True:
         distances = mm.floodfill(mm.maze, goal)
         
@@ -37,19 +38,12 @@ if __name__ == "__main__":
             distances = mm.floodfill(mm.maze, goal)
             route = mm.pickroute(distances)
             if route == (-mm.dir[1],mm.dir[0]):
-                time.sleep(0.5)
                 mm.drive_turn(1)
-                time.sleep(0.5)
             elif route == (mm.dir[1],-mm.dir[0]):
-                time.sleep(0.5)
                 mm.drive_turn(-1)
-                time.sleep(0.5)
             elif route == (-mm.dir[0],-mm.dir[1]):
-                time.sleep(0.5)
                 mm.drive_turn(1,True)
-                time.sleep(0.5)
                 mm.drive_turn(1)
-                time.sleep(0.5)
             if route == (mm.dir[0], mm.dir[1]):
                 mm.led_debug_set(False)
                 buffer = 0
@@ -67,17 +61,25 @@ if __name__ == "__main__":
                 mm.led_debug_set(True)
             if mm.get_button():
                 mm.drive_stop()
+                mm.led_red_set(True)
+                time.sleep(5)
                 break
 
-        if mm.pos == [4,4]: goal = [0,0]
-        if mm.get_button():
-            mm.drive_stop()
-            break
+        while not mm.get_button():
+            time.sleep(0.1)
         
-    mm.save_persistent_text('maze.txt', str(mm.maze))
-    mm.save_persistent_text('neighbours.txt', str(mm.get_neighbours(mm.pos, mm.maze)))
-    mm.save_persistent_text('encoders.txt', str(mm.encoders))
-    mm.save_persistent_text('route.txt', str(mm.route))
+        mm.led_red_set(False)
+        mm.save_persistent_text('maze.txt', str(mm.maze))
+        mm.save_persistent_text('neighbours.txt', str(mm.get_neighbours(mm.pos, mm.maze)))
+        mm.save_persistent_text('encoders.txt', str(mm.encoders))
+        mm.save_persistent_text('route.txt', str(mm.route))
+        mm.led_green_set(True)
+        time.sleep(1)
+        mm.led_green_set(False)
+        break
+        
+        
+    
 ## END OF VERY IMPORTANT STUFF
 
 

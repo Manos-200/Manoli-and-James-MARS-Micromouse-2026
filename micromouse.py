@@ -10,6 +10,7 @@ from machine import Pin, Timer, ADC
 from motor import Motor
 from ucollections import deque
 import time
+import ujson
 from encoders import Encoders
 encoders = Encoders()
 
@@ -35,7 +36,7 @@ class Micromouse():
             cls.instance = super(Micromouse, cls).__new__(cls)
         return cls.instance
 
-    def __init__(self, size=9):
+    def __init__(self, load_maze = True, size=9):
         """
         Initialises the member variables upon first creation.
         """
@@ -65,7 +66,10 @@ class Micromouse():
         self.blink_timer = Timer()
         self.pos = [0,0]
         self.dir = [1,0]
-        self.maze = [[0 for _ in range(size*2-1)] for _ in range(size*2-1)]
+        if load_maze:
+            self.maze = self.load_persistent_text('maze.txt')
+        else:
+            self.maze = [[0 for _ in range(size*2-1)] for _ in range(size*2-1)]
         
         self.encoders = []
         self.route = []
@@ -399,7 +403,7 @@ class Micromouse():
         self.motor_1.spin_stop()
         self.motor_2.spin_stop()
         
-        time.sleep(0.5)
+        
         self.encoders.append((count_1,count_2))
         self.route.append(self.pos)
     
@@ -548,7 +552,7 @@ class Micromouse():
         elif (x+dy,y-dx) in s_neighbours:
             route = (dy,-dx)
         elif (x-dx,y-dy) in s_neighbours:
-            route = (-dy,-dx)
+            route = (-dx,-dy)
         else:
             route = (0,0)
         return route
@@ -576,7 +580,7 @@ class Micromouse():
         """
         try:
             with open(filename, "r") as f:
-                return f.read()
+                return ujson.loads(f.read())
         except OSError:
             return None
 
